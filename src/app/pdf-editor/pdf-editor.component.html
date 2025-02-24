@@ -1,0 +1,112 @@
+<p>pdf-editor works!</p>
+
+
+<!-- <input type="file" (change)="onFileSelected($event)">
+<pdf-viewer [src]="pdfSrc" style="width: 100%; height: 600px;"></pdf-viewer>
+
+<form *ngIf="extractedText.length > 0">
+  <div *ngFor="let text of extractedText; let i = index">
+    <label>Texto {{ i + 1 }}</label>
+    <input [(ngModel)]="extractedText[i]" name="text{{i}}">
+  </div>
+  <button (click)="updatePdf()">Actualizar PDF</button>
+</form> -->
+
+<!-- <input type="file" (change)="onFileSelected($event)" accept=".pdf">
+
+<pdf-viewer [src]="pdfSrc" style="width: 100%; height: 600px;"></pdf-viewer>
+
+<div *ngIf="pdfSrc">
+  <h3>Editar Texto del PDF</h3>
+  <div *ngFor="let text of extractedText; let i = index">
+    <label>Texto {{ i + 1 }}</label>
+    <input type="text" [(ngModel)]="extractedText[i].modified">
+  </div>
+
+  <button (click)="editPdf()">Actualizar PDF</button>
+</div>
+
+<button *ngIf="modifiedPdfBytes" (click)="savePdf()">Guardar PDF</button>>> -->
+<!--
+<div>
+  <input type="file" (change)="onFileChange($event)" />
+  <button (click)="generatePdfPreview()">Actualizar Vista Previa</button>
+  <button (click)="savePdf()">Guardar PDF</button>
+</div>
+
+<div *ngIf="pdfData.length > 0">
+  <h3>Editar Recibo</h3>
+  <div *ngFor="let item of pdfData; let i = index">
+    <div>
+      <label>Texto en posición {{ i }}:</label>
+      <input
+        [(ngModel)]="editedText[i]"
+        [style.left]="item.transform[4] + '%'"
+        [style.top]="item.transform[5] + '%'"
+        [style.fontSize]="item.transform[0] * 3+ 'px'"
+        type="text"
+      />
+    </div>
+  </div>
+</div>
+
+<div *ngIf="pdfPreviewUrl">
+  <h3>Vista Previa</h3>
+  <iframe [src]="pdfPreviewUrl" width="100%" height="500px"></iframe>
+</div> -->
+
+
+
+
+<!-- <input type="file" (change)="onFileSelected($event)" accept=".pdf"> -->
+
+<!-- Control de Zoom -->
+<!-- <label>Zoom:</label>
+<input type="range" min="50" max="200" [(ngModel)]="zoomLevel" (input)="updateZoom()">
+<span>{{ zoomLevel }}%</span> -->
+
+<!-- Visor de PDF -->
+<!-- <pdf-viewer [src]="pdfSrc" [zoom]="zoomLevel / 100" style="width: 100%; height: 600px;"></pdf-viewer> -->
+
+<!-- Formulario para Editar Texto -->
+<!-- <div *ngIf="extractedText.length > 0">
+  <h3>Editar Información del Recibo</h3>
+  <div *ngFor="let item of extractedText; let i = index"
+       [style.position]="'absolute'"
+       [style.left.px]="item.x * zoomFactor"
+       [style.top.px]="item.y * zoomFactor">
+    <input type="text" [(ngModel)]="extractedText[i].modified"
+           [style.fontSize.px]="item.size * zoomFactor"
+           [style.width.px]="item.width * zoomFactor"
+           [style.height.px]="item.height * zoomFactor">
+  </div>
+
+  <button (click)="editPdf()">Actualizar PDF</button>
+</div> -->
+<!--
+<button *ngIf="modifiedPdfBytes" (click)="savePdf()">Guardar PDF</button> -->
+
+
+<div>
+  <input type="file" (change)="onFileChange($event)" />
+  <button (click)="modifyPdf()">Actualizar PDF</button>
+  <button (click)="downloadPdf()" *ngIf="modifiedPdfUrl">Descargar PDF</button>
+</div>
+
+<div *ngIf="originalPdfUrl">
+  <h3>Vista previa del PDF original</h3>
+  <iframe [src]="originalPdfUrl" width="100%" height="500px"></iframe>
+</div>
+
+<div *ngIf="pdfData.length > 0">
+  <h3>Editar Recibo de Agua</h3>
+  <div *ngFor="let item of pdfData; let i = index">
+    <label>Texto en posición {{ i }}:</label>
+    <input [(ngModel)]="editedText[i]" type="text" />
+  </div>
+</div>
+
+<div *ngIf="modifiedPdfUrl">
+  <h3>Vista previa del PDF modificado</h3>
+  <iframe [src]="modifiedPdfUrl" width="100%" height="500px"></iframe>
+</div>
