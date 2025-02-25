@@ -37,6 +37,9 @@ export class PdfEditorComponent {
       return { color: 'blue', bold: true };
     }
     return { color: 'blue', bold: false }; // Azul para cualquier otro campo
+
+
+
   }
 
   onFileChange(event: any): void {
@@ -105,6 +108,11 @@ export class PdfEditorComponent {
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
+
+    //Definir posiciones con condiciones especiales
+    const wideLongPositions = [8, 9, 10, 14, 15, 16, 17]; // Mayor ancho
+    const wideSmallPositions =  [101, 102, 103, 104, 105, 110, 116]; // Reducir ancho y mover a la izquierda
+
     for (let i = 0; i < this.pdfData.length; i++) {
       const item = this.pdfData[i];
       const newText = this.editedText[i];
@@ -122,6 +130,14 @@ export class PdfEditorComponent {
         backgroundColor = rgb(230 / 255, 239 / 255, 254 / 255); // Azul
       }
 
+       // Ajustar ancho según la posición
+       let rectWidth = item.width; // Valor por defecto
+       if (wideLongPositions.includes(position)) {
+         rectWidth = newText.length * 4; // Aumentar ancho
+       } else if (wideSmallPositions.includes(position)) {
+         rectWidth = newText.length * 2; // Reducir ancho
+       }
+
 
       if (newText !== item.text) {
         const page = pdfDoc.getPages()[item.page - 1];
@@ -130,14 +146,18 @@ export class PdfEditorComponent {
         const [x, y] = item.transform.slice(4, 6);
         const fontSize = 7;
 
-        // Obtener fuente original
-        //const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      // Ajustar posición si está dentro de wideSmallPositions
+        // let adjustedX = item.x;
+        // if (wideSmallPositions.includes(position)) {
+        //   adjustedX -= 5; // Mover 5 unidades a la izquierda
+        // }
+
 
         // Dibujar un rectángulo blanco para "borrar" el texto original
         page.drawRectangle({
-          x: x - 1,
+          x: x-1, ///adjustedX,   //x - 1,
           y: y - fontSize / 3,
-          width: newText.length * 6,
+          width: rectWidth, //newText.length * 6,
           height: fontSize + 3,
           color: backgroundColor,
           //color: rgb(230 / 255, 239 / 255, 254 / 255), //RGB(230, 239, 254)  //Azul
@@ -154,6 +174,7 @@ export class PdfEditorComponent {
           font: bold ? fontBold : fontRegular, // Negritas si es necesario
           color: rgb(0, 0, 0)
         });
+        console.log(`Texto modificado en posición: ${position}, Nuevo texto: "${newText}", Ancho: ${rectWidth}`);
       }
     }
 
