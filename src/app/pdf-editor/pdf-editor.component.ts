@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {PDFDocument, rgb, StandardFonts} from 'pdf-lib';
+import {colorToComponents, PDFDocument, rgb, StandardFonts} from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist'
 import 'pdfjs-dist/build/pdf.worker';
 import {PdfReaderService} from '../pdf-reader.service';
@@ -23,9 +23,10 @@ export class PdfEditorComponent {
   constructor(private pdfReaderService: PdfReaderService, private sanitizer: DomSanitizer) {}
 
   detectChange(position: number){
-    const whitePositions = [4, 35, 39, 43, 44, 48];  // Blanco
+    const whitePositions = [4, 35, 39, 43, 44, 48,69,73,75,77];  // Blanco
     const yellowBoldPositions = [101, 102, 103, 104, 105, 110, 116]; // Amarillo con negritas
     const blueBoldPositions = [113]; // Azul con negritas
+    const whiteBoldPositions = [69]; //Blanco con negritas
 
     if(whitePositions.includes(position)){
       return {color: 'white',bold:false};
@@ -35,6 +36,9 @@ export class PdfEditorComponent {
     }
     if (blueBoldPositions.includes(position)) {
       return { color: 'blue', bold: true };
+    }
+    if(whiteBoldPositions.includes(position)){
+      return {color: 'white', bold: true};
     }
     return { color: 'blue', bold: false }; // Azul para cualquier otro campo
 
@@ -112,6 +116,7 @@ export class PdfEditorComponent {
     //Definir posiciones con condiciones especiales
     const wideLongPositions = [8, 9, 10, 14, 15, 16, 17]; // Mayor ancho
     const wideSmallPositions =  [101, 102, 103, 104, 105, 110, 116]; // Reducir ancho y mover a la izquierda
+    const MedidorTamaño = [69,73,75,77]; //Ajusta las letras del medidor
 
     for (let i = 0; i < this.pdfData.length; i++) {
       const item = this.pdfData[i];
@@ -136,6 +141,8 @@ export class PdfEditorComponent {
          rectWidth = newText.length * 4; // Aumentar ancho
        } else if (wideSmallPositions.includes(position)) {
          rectWidth = newText.length * 2; // Reducir ancho
+       }else if(MedidorTamaño.includes(position)){
+        rectWidth = newText.length *3; // Aumentar ancho
        }
 
 
@@ -144,37 +151,87 @@ export class PdfEditorComponent {
 
         // Obtener coordenadas
         const [x, y] = item.transform.slice(4, 6);
+
+        // Definir un tamaño mínimo de fuente
+
+        const minFontSize = 5;
+        const fontSizeReduction = 3;
         const fontSize = 7;
 
-      // Ajustar posición si está dentro de wideSmallPositions
-        // let adjustedX = item.x;
-        // if (wideSmallPositions.includes(position)) {
-        //   adjustedX -= 5; // Mover 5 unidades a la izquierda
-        // }
+      // Ajustar el tamaño de la fuente si la posición es 69
+      let adjustedFontSize = fontSize;
+      if (position === 69 || position === 73 || position === 75 || position === 77) {
+        adjustedFontSize = Math.max(minFontSize, fontSize - fontSizeReduction); // Reducir pero sin bajar del mínimo
+
+             // Dibujar un rectángulo blanco para "borrar" el texto original
+             page.drawRectangle({
+              x: x-1, ///adjustedX,   //x - 1,
+              y: y - fontSizeReduction  / 4 ,
+              width: rectWidth, //newText.length * 6,
+              height: fontSizeReduction + 4,
+              color: backgroundColor,
+              //color: rgb(230 / 255, 239 / 255, 254 / 255), //RGB(230, 239, 254)  //Azul
+              //color: rgb(252 / 255, 254 / 255, 230 / 255),  //RGB(252, 254, 230)  //Amarillo
+              //color: rgb(1, 1, 1),  //Blanco
+
+            });
 
 
-        // Dibujar un rectángulo blanco para "borrar" el texto original
-        page.drawRectangle({
-          x: x-1, ///adjustedX,   //x - 1,
-          y: y - fontSize / 3,
-          width: rectWidth, //newText.length * 6,
-          height: fontSize + 3,
-          color: backgroundColor,
-          //color: rgb(230 / 255, 239 / 255, 254 / 255), //RGB(230, 239, 254)  //Azul
-          //color: rgb(252 / 255, 254 / 255, 230 / 255),  //RGB(252, 254, 230)  //Amarillo
-          //color: rgb(1, 1, 1),  //Blanco
 
-        });
+      }
+      else{
 
-        // Escribir el nuevo texto
-        page.drawText(newText, {
-          x,
-          y,
-          size: fontSize,
-          font: bold ? fontBold : fontRegular, // Negritas si es necesario
-          color: rgb(0, 0, 0)
-        });
-        console.log(`Texto modificado en posición: ${position}, Nuevo texto: "${newText}", Ancho: ${rectWidth}`);
+              // Dibujar un rectángulo blanco para "borrar" el texto original
+              page.drawRectangle({
+                x: x-1, ///adjustedX,   //x - 1,
+                y: y - fontSize / 2,
+                width: rectWidth, //newText.length * 6,
+                height: fontSize + 2,
+                color: backgroundColor,
+                //color: rgb(230 / 255, 239 / 255, 254 / 255), //RGB(230, 239, 254)  //Azul
+                //color: rgb(252 / 255, 254 / 255, 230 / 255),  //RGB(252, 254, 230)  //Amarillo
+                //color: rgb(1, 1, 1),  //Blanco
+
+              });
+
+
+      }
+
+ // Escribir el nuevo texto
+if(position === 69 || position === 73 || position === 75 || position === 77){
+
+  page.drawText(newText, {
+    x,
+    y,
+    size: minFontSize,
+    font: bold ? fontBold : fontBold, // Negritas si es necesario
+    color: rgb(0, 0, 0)
+  });
+  console.log(`Texto modificado en posición: ${position}, Nuevo texto: "${newText}", Ancho: ${rectWidth}`);
+
+}else{
+
+  page.drawText(newText, {
+    x,
+    y,
+    size: fontSize,
+    font: bold ? fontBold : fontRegular, // Negritas si es necesario
+    color: rgb(0, 0, 0)
+  });
+  console.log(`Texto modificado en posición: ${position}, Nuevo texto: "${newText}", Ancho: ${rectWidth}`);
+
+
+}
+
+        // // Escribir el nuevo texto
+        // page.drawText(newText, {
+        //   x,
+        //   y,
+        //   size: fontSize,
+        //   font: bold ? fontBold : fontRegular, // Negritas si es necesario
+        //   color: rgb(0, 0, 0)
+        // });
+        // console.log(`Texto modificado en posición: ${position}, Nuevo texto: "${newText}", Ancho: ${rectWidth}`);
       }
     }
 
